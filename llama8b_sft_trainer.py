@@ -10,6 +10,7 @@ from transformers import TrainingArguments
 import torch
 
 model_id = "meta-llama/Meta-Llama-3-8B"
+print("model_id:", model_id)
 
 fsdp_v2.use_fsdp_v2()
 
@@ -46,6 +47,8 @@ lora_config = LoraConfig(
     task_type="CAUSAL_LM",
 )
 
+print("lora config: ", lora_config)
+
 print("----3----")
 
 # Set up the FSDP arguments
@@ -54,6 +57,9 @@ fsdp_training_args = {
     "fsdp": "full_shard",
     "fsdp_config": fsdp_v2.get_fsdp_config(cls_to_wrap),
 }
+
+print("fsdp_training_args:", fsdp_training_args)
+
 tokenizer.pad_token = tokenizer.eos_token
 
 # Set up the trainer
@@ -73,8 +79,7 @@ trainer = SFTTrainer(
         dataloader_drop_last = True,  # Required for FSDPv2.
         **fsdp_training_args,
     ),
-    # peft_config=lora_config,
-    # packing=True,
+    peft_config=lora_config,
 )
 
 print("----4----")
