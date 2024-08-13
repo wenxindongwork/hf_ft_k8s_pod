@@ -6,7 +6,6 @@ pip install torch~=2.4.0 torch_xla[tpu]~=2.4.0 -f https://storage.googleapis.com
 pip install tensorflow-cpu tensorboard-plugin-profile
 echo "set -g history-limit 500000" >> ~/.tmux.conf
 apt update
-# apt install linux-perf
 apt-get -y install tmux
 apt-get -y install htop
 tmux

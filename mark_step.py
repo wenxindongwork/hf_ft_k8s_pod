@@ -75,10 +75,7 @@ def run_model(with_mark_step =True):
             print(f"iteration {i} mark_step ", 1000*(datetime.datetime.now()-s).total_seconds())
             p.step()
 
-print("="*10, "with mark step  before optimizer", "="*10) 
 run_model(True)
-# print("="*10, "without mark step before optimizer", "="*10) 
-# run_model(False)
 
 # with mark step  before optimizer, target_modules=["k_proj", "v_proj"]
 # wenxin: up_proj_x took 0.095
