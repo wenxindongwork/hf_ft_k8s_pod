@@ -10,6 +10,8 @@ from transformers import TrainingArguments, Trainer
 import torch
 
 model_id = "meta-llama/Meta-Llama-3-8B"
+
+print("model_id ", model_id)
 fsdp_v2.use_fsdp_v2()
 
 print("----0----")
@@ -46,6 +48,8 @@ fsdp_training_args = {
 }
 tokenizer.pad_token = tokenizer.eos_token
 
+print("fsdp_training_args", fsdp_training_args)
+
 # Set up the trainer
 trainer = Trainer(
     model=model,
@@ -53,7 +57,7 @@ trainer = Trainer(
     args=TrainingArguments(
         per_device_train_batch_size=1,
         num_train_epochs=1,
-        max_steps=15,
+        max_steps=10,
         save_steps=20,
         eval_steps=20,
         output_dir="./output",

@@ -8,6 +8,7 @@ from peft import LoraConfig
 from trl import SFTTrainer, ORPOConfig
 from transformers import TrainingArguments
 import torch
+import os 
 
 model_id = "meta-llama/Meta-Llama-3-8B"
 print("model_id:", model_id)
@@ -40,14 +41,14 @@ model = AutoModelForCausalLM.from_pretrained(model_id, use_cache=True)
 
 print("----2----")
 
+lora_kv_proj = os.environ.get("LORA_KV_PROJ", "False").lower() == "true"
+
 # Set up PEFT LoRA for fine-tuning.
 lora_config = LoraConfig(
     r=64, 
-    target_modules="all-linear",
+    target_modules= ["k_proj", "v_proj"] if lora_kv_proj else "all-linear",
     task_type="CAUSAL_LM",
 )
-
-print("lora config: ", lora_config)
 
 print("----3----")
 
@@ -58,9 +59,17 @@ fsdp_training_args = {
     "fsdp_config": fsdp_v2.get_fsdp_config(cls_to_wrap),
 }
 
+no_fsdp = os.environ.get("NO_FSDP", "False").lower() == "true"
+fsdp_training_args = {} if no_fsdp else fsdp_training_args
+
 print("fsdp_training_args:", fsdp_training_args)
 
 tokenizer.pad_token = tokenizer.eos_token
+
+no_lora = os.environ.get("NO_LORA", "False").lower() == "true"
+peft_config = None if no_lora else lora_config
+
+print("peft_config", peft_config)
 
 # Set up the trainer
 trainer = SFTTrainer(
@@ -79,7 +88,7 @@ trainer = SFTTrainer(
         dataloader_drop_last = True,  # Required for FSDPv2.
         **fsdp_training_args,
     ),
-    peft_config=lora_config,
+    peft_config=peft_config,
 )
 
 print("----4----")
