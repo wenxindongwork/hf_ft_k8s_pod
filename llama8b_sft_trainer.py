@@ -10,6 +10,10 @@ from transformers import TrainingArguments
 import torch
 import os 
 
+import torch_xla.runtime as xr
+xr.initialize_cache('/tmp/cache/', readonly=False)
+
+
 model_id = "meta-llama/Meta-Llama-3-8B"
 print("model_id:", model_id)
 
